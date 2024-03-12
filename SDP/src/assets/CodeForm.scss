@@ -1,0 +1,158 @@
+$primary-color: #fab481;
+$secondary-color: #86e4d1;
+$background-color: #3b3b3b;
+$text-color: #f5f5f5;
+$fog: #3b3b3b3d;
+@font-face {
+  font-family: "Silkscreen";
+  src: url("path-to-your-fonts/Silkscreen.woff2") format("woff2"),
+    url("path-to-your-fonts/Silkscreen.woff") format("woff");
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-10deg);
+  }
+  75% {
+    transform: rotate(10deg);
+  }
+}
+
+.Body {
+  background: $background-color;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-areas: "left right";
+  width: 100%;
+  height: 80vh;
+  column-gap: 5px;
+  grid-auto-columns: 50%;
+  padding: 0px;
+  margin: 0px;
+}
+
+.Score {
+  font-family: "Silkscreen", sans-serif;
+  grid-area: right;
+  position: relative;
+  padding: 20px;
+  background-color: $secondary-color;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 5em;
+  color: #495057;
+  width: 80%; // Reduce width
+  height: 80%; // Reduce height
+  display: flex;
+  flex-direction: column;
+  justify-content: center; // Center vertically
+  align-items: center; // Center horizontally
+  margin: auto; // Center in its area
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); // Add a shadow
+  .Language {
+    font-size: 0.5em;
+  }
+}
+@keyframes waviy {
+  0%,
+  40%,
+  100% {
+    transform: translateY(0);
+  }
+  20% {
+    transform: translateY(-5px);
+  }
+}
+.ScoreBreakdown {
+  font-size: 2vh;
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  top: 0;
+  right: 20px;
+  visibility: visible;
+  opacity: 100;
+  transition: visibility 0.3s, opacity 0.3s;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: rgba(255, 255, 255, 0.238);
+  color: #495057;
+  display: inline-block;
+  border-radius: 5px;
+}
+.line {
+  text-align: left;
+}
+.letter {
+  display: inline-block;
+  animation: waviy 1s infinite alternate;
+}
+
+.letter {
+  animation-delay: calc(0.1s * var(--i));
+}
+.codeForm {
+  background: $primary-color;
+  grid-area: left;
+  position: relative;
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  text-align: center;
+  left: 0;
+  width: 80%; // Reduce width
+  height: 80%; // Reduce height
+  display: flex;
+  flex-direction: column;
+  justify-content: center; // Center vertically
+  align-items: center; // Center horizontally
+  margin: auto; // Center in its area
+}
+.codeForm .FormTray {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.codeForm .FormTray textarea {
+  resize: none;
+  width: 40vw;
+  height: 60vh;
+  text-align: left;
+  border: 2px solid;
+  border-radius: 4px;
+  font-size: 1rem;
+  min-width: 125px;
+  background-color: $fog;
+  transition: background-color 0.5s ease-out;
+}
+
+.FormSubmit {
+  margin-top: -12px;
+}
+.FormSubmit button {
+  margin-top: -12px;
+  background-color: #c0c0c0;
+  border: 1px solid #000;
+  border-top-color: #808080;
+  border-left-color: #808080;
+  padding: 5px 10px;
+  font-family: "MS Sans Serif", sans-serif;
+  font-size: 1em;
+  color: #000;
+  cursor: pointer;
+
+  &:active {
+    border: 1px solid #000;
+    border-top-color: #c0c0c0;
+    border-left-color: #c0c0c0;
+  }
+}

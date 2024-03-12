@@ -1,0 +1,29 @@
+$primary-color: #fab481;
+$secondary-color: #86e4d1;
+$background-color: #3b3b3b;
+$text-color: #f5f5f5;
+$fog: #3b3b3b3d;
+
+.Header {
+  width: 110%;
+  height: 130px;
+  display: flex;
+  border-bottom: 2px solid $text-color;
+  margin: -8px;
+  margin-bottom: 10px;
+  background: $background-color;
+}
+
+.Header img {
+  padding-top: 15px;
+  width: 100px;
+  height: 100px;
+}
+
+.Header h1 {
+  font-size: 28px;
+  padding-top: 19px;
+  padding-left: 4px;
+  font-style: italic;
+  color: $text-color;
+}
