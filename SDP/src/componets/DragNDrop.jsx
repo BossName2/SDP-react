@@ -1,12 +1,12 @@
 import { useState, useRef } from "react";
+import PropTypes from "prop-types";
 import "./DragNDrop.scss";
 
-function DragNDrop({ setCode }, code) {
+function DragNDrop(props) {
   // drag state
   const [dragActive, setDragActive] = useState(false);
-  const [uploadText, setUploadText] = useState(
-    "Drag and drop a file here or paste your code in!"
-  );
+
+  console.log(props.code);
   // ref
   const inputRef = useRef("test");
 
@@ -31,9 +31,8 @@ function DragNDrop({ setCode }, code) {
         reader = new FileReader();
       reader.onload = function (event) {
         const newFileText = event.target.result;
-        if (newFileText !== code) {
-          setUploadText(newFileText);
-          setCode(newFileText);
+        if (newFileText !== props.code) {
+          props.setCode(newFileText);
         }
       };
       // Read the file as text
@@ -48,46 +47,30 @@ function DragNDrop({ setCode }, code) {
     if (e.target.files && e.target.files[0]) {
       //
     } else if (name === "code") {
-      setUploadText(value);
-      setCode(value);
+      props.setCode(value);
     }
   };
 
   return (
-    <form
-      id="form-file-upload"
+    <div
+      id="drag-file-element"
       onDragEnter={handleDrag}
-      onSubmit={(e) => e.preventDefault()}
+      onDragLeave={handleDrag}
+      onDragOver={handleDrag}
+      onDrop={handleDrop}
     >
-      <input
-        ref={inputRef}
-        type="file"
-        id="input-file-upload"
-        multiple={true}
+      <textarea
+        type="text"
+        name="code"
+        value={props.code}
+        //value={conformance.js2html["code"](code.code)}
         onChange={handleChange}
       />
-      <label
-        id="label-file-upload"
-        htmlFor="input-file-upload"
-        className={dragActive ? "drag-active" : ""}
-      ></label>
-
-      <div
-        id="drag-file-element"
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-      >
-        <textarea
-          type="text"
-          name="code"
-          value={uploadText}
-          //value={conformance.js2html["code"](code.code)}
-          onChange={handleChange}
-        />
-      </div>
-    </form>
+    </div>
   );
 }
+DragNDrop.propTypes = {
+  code: PropTypes.string,
+  setCode: PropTypes.func,
+};
 export default DragNDrop;

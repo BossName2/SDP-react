@@ -1,0 +1,26 @@
+$primary-color: #fab481;
+$secondary-color: #86e4d1;
+$background-color: #3b3b3b;
+$text-color: #f5f5f5;
+$fog: #3b3b3b3d;
+.uploadButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: $primary-color;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.3s ease;
+  box-shadow: 0px 3px 0px darken($primary-color, 50%);
+}
+
+.uploadButton:active {
+  box-shadow: none;
+  transform: translateY(3px);
+}
+
+.Cancel {
+  background-color: $text-color;
+  box-shadow: 0px 3px 0px darken($text-color, 50%);
+}

@@ -3,30 +3,13 @@ $secondary-color: #86e4d1;
 $background-color: #3b3b3b;
 $text-color: #f5f5f5;
 $fog: #3b3b3b3d;
-@font-face {
-  font-family: "Silkscreen";
-  src: url("path-to-your-fonts/Silkscreen.woff2") format("woff2"),
-    url("path-to-your-fonts/Silkscreen.woff") format("woff");
-}
-
-@keyframes wave {
-  0%,
-  100% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(-10deg);
-  }
-  75% {
-    transform: rotate(10deg);
-  }
-}
 
 .Body {
   background: $background-color;
   display: inline-grid;
   grid-auto-flow: column;
   grid-template-areas: "left right";
+  grid-template-columns: 2fr 1fr;
   width: 100%;
   height: 80vh;
   column-gap: 5px;
@@ -35,29 +18,6 @@ $fog: #3b3b3b3d;
   margin: 0px;
 }
 
-.Score {
-  font-family: "Silkscreen", sans-serif;
-  grid-area: right;
-  position: relative;
-  padding: 20px;
-  background-color: $secondary-color;
-  border: 1px solid #dee2e6;
-  border-radius: 5px;
-  text-align: center;
-  font-size: 5em;
-  color: #495057;
-  width: 80%; // Reduce width
-  height: 80%; // Reduce height
-  display: flex;
-  flex-direction: column;
-  justify-content: center; // Center vertically
-  align-items: center; // Center horizontally
-  margin: auto; // Center in its area
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); // Add a shadow
-  .Language {
-    font-size: 0.5em;
-  }
-}
 @keyframes waviy {
   0%,
   40%,
@@ -68,19 +28,28 @@ $fog: #3b3b3b3d;
     transform: translateY(-5px);
   }
 }
-.ScoreBreakdown {
+.ScoreSection {
+  text-align: left;
   font-size: 2vh;
   display: flex;
   flex-direction: row;
-  position: absolute;
+  width: 100%;
+  margin-top: 10px;
+  display: inline-block;
+  border-radius: 5px;
+  .Title {
+    padding-left: 5px;
+  }
+}
+.Results {
+  font-size: 2vh;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
   top: 0;
   right: 20px;
-  visibility: visible;
-  opacity: 100;
-  transition: visibility 0.3s, opacity 0.3s;
-  padding: 10px;
-  margin-top: 10px;
-  background-color: rgba(255, 255, 255, 0.238);
+  padding: 10px 10px 30px 10px;
+  background-color: rgba(255, 255, 255, 0.759);
   color: #495057;
   display: inline-block;
   border-radius: 5px;
@@ -96,23 +65,7 @@ $fog: #3b3b3b3d;
 .letter {
   animation-delay: calc(0.1s * var(--i));
 }
-.codeForm {
-  background: $primary-color;
-  grid-area: left;
-  position: relative;
-  padding: 20px;
-  border: 1px solid #dee2e6;
-  border-radius: 5px;
-  text-align: center;
-  left: 0;
-  width: 80%; // Reduce width
-  height: 80%; // Reduce height
-  display: flex;
-  flex-direction: column;
-  justify-content: center; // Center vertically
-  align-items: center; // Center horizontally
-  margin: auto; // Center in its area
-}
+
 .codeForm .FormTray {
   width: 100%;
   height: 100%;
@@ -136,23 +89,98 @@ $fog: #3b3b3b3d;
 }
 
 .FormSubmit {
-  margin-top: -12px;
+  margin: auto; // Center in its area
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 }
-.FormSubmit button {
-  margin-top: -12px;
-  background-color: #c0c0c0;
-  border: 1px solid #000;
-  border-top-color: #808080;
-  border-left-color: #808080;
-  padding: 5px 10px;
-  font-family: "MS Sans Serif", sans-serif;
-  font-size: 1em;
-  color: #000;
-  cursor: pointer;
 
-  &:active {
-    border: 1px solid #000;
-    border-top-color: #c0c0c0;
-    border-left-color: #c0c0c0;
-  }
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: $primary-color;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease,
+    transform 0.3s ease;
+  box-shadow: 0px 3px 0px darken($primary-color, 50%);
+}
+
+.button:active {
+  box-shadow: none;
+  transform: translateY(3px);
+}
+
+.Cancel {
+  background-color: $text-color;
+  box-shadow: 0px 3px 0px darken($text-color, 50%);
+}
+.sharedStyle {
+  position: relative;
+  padding: 20px;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  text-align: center;
+  width: 80%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+}
+
+.codeForm {
+  background: $primary-color;
+  @extend .sharedStyle;
+}
+
+.Score {
+  background: $secondary-color;
+  @extend .sharedStyle;
+  padding-left: 0px;
+}
+
+.sharedSideStyle {
+  align-items: center;
+  position: relative;
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+}
+
+.ResultSide {
+  grid-area: right;
+  @extend .sharedSideStyle;
+}
+
+.FormSide {
+  grid-area: left;
+  @extend .sharedSideStyle;
+}
+.sharedTitleStyle {
+  font-size: 2vh;
+  border: 1px solid $text-color;
+  border-radius: 3px;
+  color: $text-color;
+  margin: auto;
+  margin-bottom: 10px;
+  width: 80%;
+  padding: 5px;
+  padding-left: 20px;
+  text-align: left;
+}
+.ResultTitle {
+  @extend .sharedTitleStyle;
+}
+.FormTitle {
+  margin: auto; // Center in its area
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.FormLabel {
+  @extend .sharedTitleStyle;
 }
