@@ -10,6 +10,21 @@ import "./CodeForm.scss";
 //   code: `Place code here`,
 // };
 const initialCode = "Place code here";
+const logo = `
+ ______                                     __                      __   ______             
+/      \\                                   |  \\                    |  \\ /      \\           
+|  $$$$$$\\  ______   ______ ____    ______  | $$  ______   __    __  \\$$|  $$$$$$\\ __    __  
+| $$   \\$$ /      \\ |      \\    \\  /      \\ | $$ /      \\ |  \\  /  \\|  \\| $$_  \\$$|  \\  |  \\
+| $$      |  $$$$$$\\| $$$$$$\\$$$$\\|  $$$$$$\\| $$|  $$$$$$\\ \\$$\\/  $$| $$| $$ \\    | $$  | $$
+| $$   __ | $$  | $$| $$ | $$ | $$| $$  | $$| $$| $$    $$  >$$  $$ | $$| $$$$    | $$  | $$
+| $$__/  \\| $$__/ $$| $$ | $$ | $$| $$__/ $$| $$| $$$$$$$$ /  $$$$\\ | $$| $$      | $$__/ $$
+\\$$    $$ \\$$    $$| $$ | $$ | $$| $$    $$| $$ \\$$     \\|  $$ \\$$\\| $$| $$       \\$$    $$ 
+ \\$$$$$$   \\$$$$$$  \\$$  \\$$  \\$$| $$$$$$$  \\$$  \\$$$$$$$ \\$$   \\$$ \\$$ \\$$       _\\$$$$$$$ 
+                                 | $$                                            |  \\__| $$ 
+                                 | $$                                             \\$$    $$ 
+                                  \\$$                                              \\$$$$$$  
+
+`;
 
 function CodeForm({ onCancel, onSuccess }) {
   // Initialisation ------------------------------
@@ -22,15 +37,48 @@ function CodeForm({ onCancel, onSuccess }) {
     },
   };
   const apiURL = apiUrl;
-  const endpoint = `${apiURL}/cc`;
+  const endpointCC = `${apiURL}/cc`;
+  const endpointHcc = `${apiURL}/hcc`;
 
   // State ---------------------------------------
   const [code, setCode] = useState(
     "Drag and drop a file here or paste your code in!"
   );
+  const [scoreJson, setScoreJson] = useState({});
   const [score, setScore] = useState(0);
   const [language, setLanguage] = useState("Lets see what you got!");
   const [scores, setScores] = useState({});
+  const [metric, setMetric] = useState("");
+  const [cycloScores, setCycloScores] = useState("");
+  const cycloToString = (cyclo) => {
+    return (
+      `If Score: ${cyclo.ifScore}\n` +
+      `Try Score: ${cyclo.tryScore}\n` +
+      `Catch Score: ${cyclo.catchScore}\n` +
+      `Then Score: ${cyclo.thenScore}\n` +
+      `Select Score: ${cyclo.selectScore}\n` +
+      `Switch Score: ${cyclo.switchScore}\n` +
+      `For Score: ${cyclo.forScore}\n` +
+      `Do Score: ${cyclo.doScore}\n` +
+      `While Score: ${cyclo.whileScore}\n`
+    );
+  };
+  const [halsteadScores, setHalsteadScores] = useState("");
+
+  const halToString = (hal) => {
+    return (
+      `Program length: ${hal.programLengthScore.toFixed(2)}\n` +
+      `Size of vocabulary: ${hal.sizeOfVocabScore.toFixed(2)}\n` +
+      `Program volume: ${hal.programVolumeScore.toFixed(2)}\n` +
+      `Difficulty measure: ${hal.difficultyScore.toFixed(2)}\n` +
+      `Programming level: ${hal.progLevelScore.toFixed(2)}\n` +
+      `Effort measure: ${hal.effortScore.toFixed(2)}\n` +
+      `Estimated time required to program: ${hal.timeToImplemScore.toFixed(
+        2
+      )}\n` +
+      `Estimated number of bugs: ${hal.bugsScore.toFixed(2)}`
+    );
+  };
 
   const apiPost = async (endpoint, record) => {
     // Build request object
@@ -51,28 +99,77 @@ function CodeForm({ onCancel, onSuccess }) {
   useEffect(() => {}, []);
   // Handlers ------------------------------------
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (endpoint) => {
     setLanguage("Processing...");
     console.log(endpoint + `?="${code}"`);
     const response = await apiPost(endpoint, code);
     if (response.isSuccess) {
-      console.log(response.result);
+      setScoreJson(response.result);
       setScore(response.result.score);
       if (response.result.code === "Unknown") {
         setLanguage("Unknown language");
       } else {
         setLanguage(response.result.code);
       }
-      const { code, score, ...newScores } = response.result;
-      setScores(newScores);
+      const { code, score, metric, ...newScores } = response.result;
+      setMetric(metric);
+      setCycloScores(cycloToString(newScores));
     } else {
       alert(response.message);
     }
-    console.log(response);
+  };
+  const handleSubmitHcc = async (endpoint) => {
+    setLanguage("Processing...");
+    console.log(endpoint + `?="${code}"`);
+    const response = await apiPost(endpoint, code);
+    if (response.isSuccess) {
+      console.log(response.result);
+      setScoreJson(response.result);
+      setScore(response.result.score);
+      if (response.result.code === "Unknown") {
+        setLanguage("Unknown language");
+      } else {
+        setLanguage(response.result.code);
+      }
+      const { code, score, metric, ...hal } = response.result;
+      setMetric(metric);
+      setHalsteadScores(halToString(hal));
+    } else {
+      alert(response.message);
+    }
   };
   const handleCancel = () => {
     setCode("");
   };
+  const handleDownload = () => {
+    let formattedString = "";
+    let title = "";
+    let finalScore = "";
+    let breaker = "------------------- \n";
+    let detectedLanguage = `Detected language: ${language}\n ${breaker}`;
+    if (metric === "Cycolomatic") {
+      title = `Cyclomatic complexity score and breakdown:\n ${breaker}`;
+      formattedString = cycloScores;
+      finalScore = `FINAL CYCLOMATIC COMPLEXITY SCORE: ${score}\n ${breaker}`;
+    } else if (metric === "Halstead") {
+      title = `Halstead complexity score and breakdown: \n ${breaker}`;
+      formattedString = halsteadScores;
+    }
+
+    const element = document.createElement("a");
+    const file = new Blob(
+      [logo, title, detectedLanguage, finalScore, formattedString],
+      {
+        type: "text/plain",
+      }
+    );
+    element.href = URL.createObjectURL(file);
+    element.download = `Complexify${metric}Analysis.txt`;
+    document.body.appendChild(element);
+    element.click();
+  };
+
+  const handleShare = () => {};
 
   // View ----------------------------------------
   return (
@@ -80,59 +177,43 @@ function CodeForm({ onCancel, onSuccess }) {
       <Header />
       <div className="Body">
         <div className="ResultSide">
-          <div className="ResultTitle">Results Analysis:</div>
+          {metric === "" ? (
+            <div className="ResultTitle">Results Analysis:</div>
+          ) : (
+            <div className="ResultTitle">{metric} Analysis:</div>
+          )}
           <div className="Score">
             <div className="ScoreSection">
-              <div className="Title">Cyclomatic Complexity Analysis:</div>
-              <div className="Results">
-                {score}
-                {score < 9 && (
-                  <div className="EncouragingMessage">
-                    Great job! Keep it up!
+              {metric === "Cycolomatic" && (
+                <>
+                  <div className="Title">Overall score:</div>
+                  <div className="Results">
+                    {score}
+                    {score < 9 && score > 2 && (
+                      <div className="EncouragingMessage">
+                        Great job! Keep it up!
+                      </div>
+                    )}
+                    {score > 9 && (
+                      <div className="EncouragingMessage">Almost there!</div>
+                    )}
+                    {score === 1 && (
+                      <div className="EncouragingMessage">Perfect Code!</div>
+                    )}
                   </div>
-                )}
-                {score > 9 && score < 2 && (
-                  <div className="EncouragingMessage">Almost there!</div>
-                )}
-                {score == 1 && (
-                  <div className="EncouragingMessage">Perfect Code!</div>
-                )}
-              </div>
+                </>
+              )}
             </div>
             <div className="ScoreSection">
               <div className="Title">Breakdown:</div>
               <div className="Results">
-                {Object.entries(scores).map(([key, value]) => (
-                  <div className="line" key={key}>
-                    {key.split("").map((char, index) => (
-                      <span
-                        className="letter"
-                        style={{ "--i": index }}
-                        key={index}
-                      >
-                        {char}
-                      </span>
-                    ))}
-                    <span className="letter" style={{ "--i": key.length }}>
-                      :
-                    </span>
-                    <span className="letter" style={{ "--i": key.length + 1 }}>
-                      {" "}
-                    </span>
-                    {value
-                      .toString()
-                      .split("")
-                      .map((char, index) => (
-                        <span
-                          className="letter"
-                          style={{ "--i": key.length + 2 + index }}
-                          key={index}
-                        >
-                          {char}
-                        </span>
-                      ))}
-                  </div>
-                ))}
+                {metric === "Cycolomatic" ? (
+                  <div className="Hal">{cycloScores}</div>
+                ) : (
+                  metric === "Halstead" && (
+                    <div className="Hal">{halsteadScores}</div>
+                  )
+                )}
               </div>
             </div>
             <div className="ScoreSection">
@@ -151,6 +232,14 @@ function CodeForm({ onCancel, onSuccess }) {
                   : language}
               </div>
             </div>
+          </div>
+          <div className="FormSubmit">
+            <span className="Cancel button" onClick={() => handleShare()}>
+              Share
+            </span>
+            <span className="Cancel button" onClick={() => handleDownload()}>
+              Download
+            </span>
           </div>
         </div>
         <div className="FormSide">
@@ -172,8 +261,17 @@ function CodeForm({ onCancel, onSuccess }) {
             <span className="Cancel button" onClick={() => handleCancel()}>
               Clear
             </span>
-            <span className="CCsubmit button" onClick={() => handleSubmit()}>
-              Submit
+            <span
+              className="CCsubmit button"
+              onClick={() => handleSubmit(endpointCC)}
+            >
+              Submit CC
+            </span>
+            <span
+              className="CCsubmit button"
+              onClick={() => handleSubmitHcc(endpointHcc)}
+            >
+              Submit HCC
             </span>
           </div>
         </div>
